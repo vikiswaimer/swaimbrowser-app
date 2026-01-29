@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Swaim Browser — Deep Work & Lean Startup OS</title>
+  <meta name="description" content="Minimalist browser for digital nomads. Deep work sessions + embedded Lean Startup methodology. Closed beta access.">
+  <style>
+    :root {
+      --bg: #050608;
+      --bg-alt: #0b0d12;
+      --card: #11141b;
+      --accent: #4f8cff;
+      --accent-soft: rgba(79,140,255,0.08);
+      --text: #f5f5f7;
+      --muted: #a0a4b3;
+      --border: #1c1f27;
+      --danger: #ff4f6a;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 18px 45px rgba(0,0,0,0.5);
+      --font-main: system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #151826 0, #050608 55%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      padding: 20px 16px 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: conic-gradient(from 180deg, #4f8cff, #8f5bff, #4f8cff);
+      position: relative;
+      box-shadow: 0 0 18px rgba(79,140,255,0.45);
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 15%, #ffffff, #050608);
+      mix-blend-mode: screen;
+      opacity: 0.9;
+    }
+
+    .logo-text-main {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-size: 15px;
+    }
+
+    .logo-text-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+    }
+
+    .beta-pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(5,6,8,0.72);
+      backdrop-filter: blur(14px);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .beta-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(79,140,255,0.9);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 26px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .hero-kicker span {
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(160,164,179,0), rgba(160,164,179,0.9));
+    }
+
+    .hero-title {
+      font-size: clamp(28px, 6vw, 40px);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .hero-highlight {
+      background: linear-gradient(120deg, #4f8cff, #c66bff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 18px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(160,164,179,0.16);
+      color: var(--muted);
+      background: rgba(11,13,18,0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .badge-accent {
+      border-color: rgba(79,140,255,0.55);
+      color: #dde6ff;
+      background: rgba(79,140,255,0.12);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.16s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f8cff, #8f5bff);
+      color: #ffffff;
+      box-shadow: 0 12px 30px rgba(79,140,255,0.38);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(79,140,255,0.55);
+    }
+
+    .btn-ghost {
+      background: rgba(11,13,18,0.9);
+      color: var(--muted);
+      border-color: rgba(160,164,179,0.2);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(160,164,179,0.5);
+      color: #e3e4ea;
+    }
+
+    .hero-note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Mockup card */
+    .hero-mock {
+      background: linear-gradient(145deg, rgba(79,140,255,0.12), rgba(11,13,18,0.96));
+      border-radius: 24px;
+      padding: 14px 14px 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mock-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #363842;
+    }
+
+    .dot.red {background:#ff5f57;}
+    .dot.amber {background:#febc2e;}
+    .dot.green {background:#28c840;}
+
+    .mock-url {
+      flex: 1;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(5,6,8,0.85);
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mock-url-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .mock-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 640px) {
+      .mock-main {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .mock-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .mock-tab {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(5,6,8,0.8);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.05);
+      white-space: nowrap;
+    }
+
+    .mock-tab.active {
+      background: rgba(79,140,255,0.16);
+      color: #e6ecff;
+      border-color: rgba(79,140,255,0.7);
+    }
+
+    .mock-panel {
+      background: rgba(5,6,10,0.88);
+      border-radius: 18px;
+      padding: 10px 11px;
+      border: 1px solid rgba(255,255,255,0.06);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mock-heading {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .mock-focus-timer {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .mock-focus-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mock-task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .mock-task {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mock-checkbox {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      border: 1px solid rgba(160,164,179,0.5);
+    }
+
+    .mock-checkbox.done {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .mock-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .mock-pill {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 3px 7px;
+      border: 1px solid rgba(160,164,179,0.4);
+      color: var(--muted);
+    }
+
+    .mock-pill.green {
+      border-color: rgba(42, 189, 120, 0.7);
+      color: #a7ffd4;
+      background: rgba(31, 133, 86, 0.24);
+    }
+
+    /* Sections */
+    section {
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      background: rgba(5,6,10,0.86);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-top: 4px;
+    }
+
+    section + section {
+      margin-top: 14px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-text {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .section-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .section-list li::before {
+      content: "•";
+      margin-right: 6px;
+      color: var(--accent);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      border: 1px solid rgba(160,164,179,0.35);
+      color: var(--muted);
+    }
+
+    .pill.target {
+      border-color: rgba(79,140,255,0.7);
+      color: #dee7ff;
+      background: rgba(79,140,255,0.16);
+    }
+
+    /* Features grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .card {
+      border-radius: var(--radius-md);
+      padding: 10px 10px 9px;
+      background: radial-gradient(circle at top left, rgba(79,140,255,0.1), rgba(5,6,10,0.96));
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .card-title {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .card-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Form */
+    .cta {
+      display: grid;
+      grid-template-columns: minmax(0,1.2fr) minmax(0,1.1fr);
+      gap: 16px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .cta {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .form-card {
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 16px;
+      background: linear-gradient(135deg, rgba(79,140,255,0.16), rgba(5,6,10,0.96));
+      border: 1px solid rgba(79,140,255,0.4);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .form-title {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .form-text {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      border-radius: 10px;
+      border: 1px solid rgba(160,164,179,0.4);
+      background: rgba(5,6,10,0.85);
+      padding: 8px 9px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(79,140,255,0.9);
+      box-shadow: 0 0 0 1px rgba(79,140,255,0.4);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      max-height: 160px;
+    }
+
+    .form-footer {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding-inline: 12px;
+      }
+      header {
+        flex-direction: row;
+        align-items: center;
+      }
+      .beta-pill {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <header>
+        <div class="logo">
+          <div class="logo-mark"></div>
+          <div>
+            <div class="logo-text-main">Swaim Browser</div>
+            <div class="logo-text-sub">Deep work OS</div>
+          </div>
+        </div>
+        <div class="beta-pill">
+          <span class="beta-dot"></span>
+          Closed beta · Early access
+        </div>
+      </header>
+
+      <main>
+        <!-- HERO -->
+        <section class="hero">
+          <div>
+            <div class="hero-kicker">
+              <span></span> Browser as Operating System
+            </div>
+            <h1 class="hero-title">
+              Deep Work meets <span class="hero-highlight">Lean Startup</span> methodology
+            </h1>
+            <p class="hero-subtitle">
+              Swaim Browser turns your browser into a Lean Startup OS: structured <strong>Build-Measure-Learn</strong> 
+              loops, hypothesis tracking, rapid experimentation — all embedded directly in your deep work sessions.
+            </p>
+
+            <div class="hero-badges">
+              <div class="badge badge-accent">Build-Measure-Learn embedded</div>
+              <div class="badge">Deep work sessions</div>
+              <div class="badge">Digital nomad ready</div>
+            </div>
+
+            <div class="hero-actions">
+              <a href="#early-access" class="btn btn-primary">Join closed beta</a>
+              <a href="#concept" class="btn btn-ghost">See concept</a>
+            </div>
+            <div class="hero-note">
+              Looking for 50 founders, PMs & engineers building in Chiang Mai, Da Nang and beyond.
+            </div>
+          </div>
+
+          <div class="hero-mock" aria-hidden="true">
+            <div class="mock-topbar">
+              <div class="dot red"></div>
+              <div class="dot amber"></div>
+              <div class="dot green"></div>
+              <div class="mock-url">
+                <span class="mock-url-dot"></span>
+                swaimapp.com / hypothesis-3
+              </div>
+            </div>
+            <div class="mock-main">
+              <div>
+                <div class="mock-tabs">
+                  <div class="mock-tab active">Deep Work</div>
+                  <div class="mock-tab">Lean Canvas</div>
+                  <div class="mock-tab">Experiments</div>
+                  <div class="mock-tab">Insights</div>
+                </div>
+                <div class="mock-panel">
+                  <div class="mock-heading">Focus Session</div>
+                  <div class="mock-focus-timer">42:13</div>
+                  <div class="mock-focus-meta">
+                    Mode: Lean validation · Distractions blocked
+                  </div>
+                  <ul class="mock-task-list">
+                    <li class="mock-task">
+                      <span class="mock-checkbox done"></span>
+                      Competitor landing pages analyzed
+                    </li>
+                    <li class="mock-task">
+                      <span class="mock-checkbox"></span>
+                      3 customer pains validated
+                    </li>
+                    <li class="mock-task">
+                      <span class="mock-checkbox"></span>
+                      Hypothesis #3 → MVP spec ready
+                    </li>
+                  </ul>
+                  <div class="mock-pill-row">
+                    <div class="mock-pill">Social · blocked</div>
+                    <div class="mock-pill">YouTube · blocked</div>
+                    <div class="mock-pill green">Docs/Git/Research · allowed</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mock-panel">
+                <div class="mock-heading">Lean Startup Framework</div>
+                <div class="mock-label" style="margin-top:4px;">Active Experiment</div>
+                <div class="mock-pill-row">
+                  <div class="mock-pill green">Hypothesis #3 · Testing</div>
+                </div>
+
+                <div class="mock-label" style="margin-top:8px;">Build-Measure-Learn</div>
+                <div class="mock-pill-row">
+                  <div class="mock-pill">Problem validated ✓</div>
+                  <div class="mock-pill">MVP shipped → 12 users</div>
+                  <div class="mock-pill">Metric: 25% retention</div>
+                </div>
+
+                <div class="mock-label" style="margin-top:8px;">Current page → Insight</div>
+                <ul class="mock-task-list">
+                  <li class="mock-task">
+                    <span class="mock-checkbox done"></span>
+                    Tag: Customer Pain → "browser distractions"
+                  </li>
+                  <li class="mock-task">
+                    <span class="mock-checkbox done"></span>
+                    Link: Hypothesis #3 · Deep work browser
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROBLEM -->
+        <section id="concept">
+          <h2 class="section-title">Regular browsers break your Build-Measure-Learn flow</h2>
+          <p class="section-text">
+            Lean Startup demands rapid hypothesis testing and validated learning. Current browsers scatter your focus 
+            across tabs, bury insights in bookmarks, and force constant context switching.
+          </p>
+          <ul class="section-list">
+            <li><strong>Distracted validation:</strong> Documentation, social media, messaging — all in one chaotic window</li>
+            <li><strong>Disconnected experiments:</strong> Lean Canvas lives in Notion while real research happens in browser</li>
+            <li><strong>No structured learning:</strong> Insights from competitor analysis get lost in endless tabs</li>
+          </ul>
+        </section>
+
+        <!-- SOLUTION / FEATURES -->
+        <section>
+          <h2 class="section-title">Swaim: Lean Startup Operating System</h2>
+          <p class="section-text">
+            Browser rebuilt around Lean methodology: track hypotheses, run structured experiments, capture validated 
+            learning — all without leaving your deep work session.
+          </p>
+
+          <div class="pill-row">
+            <div class="pill target">Solo founders & bootstrappers</div>
+            <div class="pill">Product managers & growth PMs</div>
+            <div class="pill">Digital nomad engineers</div>
+          </div>
+
+          <div class="grid" style="margin-top:12px;">
+            <div class="card">
+              <h3 class="card-title">Deep Work Sessions</h3>
+              <p class="card-text">
+                25/50/90min sessions lock your tabset, block distractions, run timers. Perfect for focused hypothesis validation.
+              </p>
+            </div>
+            <div class="card">
+              <h3 class="card-title">Embedded Lean Canvas</h3>
+              <p class="card-text">
+                Right sidebar: Problem/Solution/Metrics/Channels. Tag any page as insight, pain, or experiment data.
+              </p>
+            </div>
+            <div class="card">
+              <h3 class="card-title">Structured Experiments</h3>
+              <p class="card-text">
+                Hypothesis → MVP → Metrics → Pivot/Persevere. Track every Build-Measure-Learn loop in context.
+              </p>
+            </div>
+            <div class="card">
+              <h3 class="card-title">Real-time Insights</h3>
+              <p class="card-text">
+                Reading competitor landing? ⌥P → tag as "Customer Pain" → link to Hypothesis #3. Zero context switch.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECURITY -->
+        <section>
+          <h2 class="section-title">Privacy-first for nomad workflows</h2>
+          <p class="section-text">
+            Your hypotheses, experiments and validated learning stay local. No cloud sync, no telemetry, no accounts.
+          </p>
+          <ul class="section-list">
+            <li>100% local storage — your Lean Canvas never leaves your machine</li>
+            <li>Tracker blocking, HTTPS-only, fingerprint resistance out of the box</li>
+            <li>Separate work profile — nomad laptop stays clean</li>
+          </ul>
+        </section>
+
+        <!-- CTA / FORM -->
+        <section id="early-access" class="cta">
+          <div>
+            <h2 class="section-title">Test Lean Startup OS in closed beta</h2>
+            <p class="section-text">
+              Building first MVP release. Need 50 founders living the Build-Measure-Learn loop daily.
+            </p>
+            <ul class="section-list">
+              <li>Shape the roadmap with direct feature requests</li>
+              <li>Test hypothesis tracking in real product work</li>
+              <li>Get browser optimized for your exact workflow</li>
+            </ul>
+          </div>
+
+          <div class="form-card">
+            <h3 class="form-title">Early access application</h3>
+            <p class="form-text">
+              One minute form. We'll invite you when first builds ship.
+            </p>
+
+            <form class="form-grid" action="https://YOUR_FORM_LINK_HERE" method="POST">
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" placeholder="you@startup.com" required>
+              </div>
+
+              <div class="field">
+                <label for="role">Primary role</label>
+                <select id="role" name="role">
+                  <option>Founder / Solo builder</option>
+                  <option>Product Manager / Growth PM</option>
+                  <option>Fullstack Engineer</option>
+                  <option>Indie Hacker</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="location">Current location</label>
+                <select id="location" name="location">
+                  <option>Chiang Mai</option>
+                  <option>Da Nang</option>
+                  <option>Ho Chi Minh City</option>
+                  <option>Bali / Canggu</option>
+                  <option>Other nomad hub</option>
+                  <option>Not a nomad</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="workflow">Your biggest browser workflow pain</label>
+                <textarea id="workflow" name="workflow" placeholder="Example: 'Lost in 50 tabs during customer discovery. No way to structure insights from research directly in browser.'"></textarea>
+              </div>
+
+              <div class="field">
+                <label for="hypothesis">Current product hypothesis you're validating</label>
+                <textarea id="hypothesis" name="hypothesis" placeholder="Example: 'Founders need structured hypothesis tracking during customer discovery to ship faster.'"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin-top:4px;">
+                Join 50-person beta
+              </button>
+
+              <div class="form-footer">
+                <small>❌ No spam. One invite email + 1 optional 15min interview</small>
+                <small>🔧 Replace action="https://YOUR_FORM_LINK_HERE" with Google Forms / Tally / etc</small>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <footer>
+          <div>© 2026 Swaim Browser · Lean Startup Operating System</div>
+          <div>Built for Chiang Mai & Da Nang digital nomads</div>
+        </footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
+
